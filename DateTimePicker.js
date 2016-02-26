@@ -19,6 +19,7 @@ const WIN = Dimensions.get('window');
 export default class DateTimePicker extends Component {
 
   static propTypes = {
+    style: PropTypes.View,
     onDone: PropTypes.func.isRequired,
     onCancel: PropTypes.func,
     initialDate: PropTypes.instanceOf(Date),
@@ -33,6 +34,7 @@ export default class DateTimePicker extends Component {
   };
 
   static defaultProps = {
+    style: {},
     cancelText: 'Cancel',
     doneText: 'Done',
     mode: 'date',
@@ -157,7 +159,7 @@ export default class DateTimePicker extends Component {
 
   render = () => {
     return (
-      <View>
+      <View style={this.props.style}>
         {this.renderModalIOS()}
         <TouchableHighlight onPress={this._openDateTimePicker}
                             underlayColor={'transparent'}>
