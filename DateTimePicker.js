@@ -1,210 +1,203 @@
-import React, {
-    Platform,
-    Component,
-    Modal,
-    View,
-    DatePickerIOS,
-    DatePickerAndroid,
-    TouchableHighlight,
-    Text,
-    Dimensions,
-    StyleSheet
-} from 'react-native';
+var React = require('react-native');
+var {
+  Platform,
+  Component,
+  PropTypes,
+  Modal,
+  View,
+  DatePickerIOS,
+  DatePickerAndroid,
+  TimePickerAndroid,
+  TouchableHighlight,
+  Text,
+  Dimensions,
+  StyleSheet
+  } = React;
+
 const WIN = Dimensions.get('window');
 
-export default class CustomDatePicker extends Component {
-    constructor(props) {
-        super(props);
+export default class DateTimePicker extends Component {
 
-        this.isReady = false;
+  static propTypes = {
+    onDone: PropTypes.func.isRequired,
+    onCancel: PropTypes.func,
+    initialDate: PropTypes.instanceOf(Date),
+    minDate: PropTypes.instanceOf(Date),
+    maxDate: PropTypes.instanceOf(Date),
+    // 'time' shows a 'time' picker, 'date' shows a date picker
+    mode: PropTypes.oneOf(['time', 'date']),
+    // When both is set, we show a DatePickerIOS in mode 'datetime' on IOS, ignored on Android
+    both: PropTypes.bool,
+    cancelText: PropTypes.string,
+    doneText: PropTypes.string
+  };
 
-        this.state = {
-            selectedDate: null,
-            minDate: null,
-            maxDate: null,
-            showModal: false
-        };
+  static defaultProps = {
+    cancelText: 'Cancel',
+    doneText: 'Done',
+    mode: 'date',
+    both: true,
+    onCancel: () => {},
+    minDate: new Date(1900, 1, 1),
+  };
 
-        this.initComponent = this.initComponent.bind(this);
-        this.openDatePicker = this.openDatePicker.bind(this);
-        this.openIOSDatePicker = this.openIOSDatePicker.bind(this);
-        this.openAndroidDatePicker = this.openAndroidDatePicker.bind(this);
-        this.handleDateChange = this.handleDateChange.bind(this);
-        this.renderModalIOS = this.renderModalIOS.bind(this);
-        this.handlePressDone = this.handlePressDone.bind(this);
-        this.handlePressCancel = this.handlePressCancel.bind(this);
-    }
+  constructor(props) {
+    super(props);
 
-    componentDidMount() {
-        this.initComponent();
-    }
+    let {initialDate} = props;
+    let selectedDate = initialDate ? initialDate : new Date();
 
-    initComponent() {
-        const selectedDate = this.props.initialDate ? this.props.initialDate : new Date();
-        const minDate = this.props.minDate ? this.props.minDate : new Date(1900, 1, 1);
-        const maxDate = this.props.maxDate ? this.props.maxDate : new Date();
+    this.state = {
+      selectedDate,
+      showModal: false,
+    };
+  }
 
-        this.setState({
-            selectedDate,
-            minDate,
-            maxDate
-        });
+  _openIOSDatePicker = () => {
+    this.setState({showModal: true});
+  };
 
-        this.isReady = true;
-    }
-
-    openIOSDatePicker() {
-        this.setState({ showModal: true });
-    }
-
-    openAndroidDatePicker() {
-        DatePickerAndroid.open({
-            date: this.state.selectedDate,
-            minDate: this.state.minDate,
-            maxDate: this.state.maxDate
-        })
-        .then((result) => {
-            if (result.action === DatePickerAndroid.dateSetAction) {
-                const selectedDate = new Date(result.year, result.month, result.day);
-
-                this.setState({ selectedDate });
-                this.props.onDone(selectedDate);
-            } else if (result.action === DatePickerAndroid.dismissedAction) {
-                this.props.onCancel ? this.props.onCancel() : null;
-            }
-        });
-    }
-
-    openDatePicker() {
-        if (!this.isReady) {
-            return;
+  _openAndroidDatePicker = () => {
+    let {onDone, onCancel, initialDate, minDate, maxDate} = this.props;
+    let {selectedDate} = this.state;
+    DatePickerAndroid.open({date: selectedDate, minDate, maxDate})
+      .then((result) => {
+        if (result.action === DatePickerAndroid.dateSetAction) {
+          let selectedDate = new Date(
+            result.year, result.month, result.day, initialDate.getHours(), initialDate.getMinutes());
+          this.setState({selectedDate});
+          onDone(selectedDate);
+        } else if (result.action === DatePickerAndroid.dismissedAction) {
+          onCancel();
         }
+      });
+  };
 
-        if (Platform.OS === 'ios') {
-            this.openIOSDatePicker();
-        } else if (Platform.OS === 'android') {
-            this.openAndroidDatePicker();
+  _openAndroidTimePicker = () => {
+    let {onDone, onCancel, initialDate} = this.props;
+    let {selectedDate} = this.state;
+    TimePickerAndroid.open({hour: selectedDate.getHours(), minute: selectedDate.getMinutes(), is24Hour: false})
+      .then((result) => {
+        if (result.action === TimePickerAndroid.timeSetAction) {
+          let selectedDate = new Date(
+            initialDate.getFullYear(), initialDate.getMonth(), initialDate.getDay(), result.hour, result.minute);
+          this.setState({selectedDate});
+          onDone(selectedDate);
+        } else if (result.action === TimePickerAndroid.dismissedAction) {
+          onCancel();
         }
-    }
+      });
+  };
 
-    handlePressDone() {
-        this.setState({ showModal: false });
-        this.props.onDone(this.state.selectedDate);
+  _openDateTimePicker = () => {
+    if (Platform.OS === 'ios') {
+      this._openIOSDatePicker();
+    } else if (Platform.OS === 'android') {
+      if (this.props.mode === 'date') {
+        this._openAndroidDatePicker();
+      } else {
+        this._openAndroidTimePicker();
+      }
     }
+  };
 
-    handlePressCancel() {
-        this.setState({ showModal: false });
-        this.props.onCancel ? this.props.onCancel() : null;
-    }
+  _handlePressDone = () => {
+    this.setState({showModal: false});
+    this.props.onDone(this.state.selectedDate);
+  };
 
-    handleDateChange(selectedDate) {
-        this.setState({ selectedDate });
-    }
+  _handlePressCancel = () => {
+    this.setState({showModal: false});
+    this.props.onCancel();
+  };
 
-    renderModalIOS() {
-        if (Platform.OS === 'ios') {
-            return (
-                <Modal
-                    animated
-                    transparent
-                    visible={this.state.showModal}
-                >
-                    <View style={styles.modalContainer}>
-                        <View style={styles.btnContainer}>
-                            <View style={styles.btn}>
-                                <TouchableHighlight
-                                    style={styles.cancel}
+  _handleDateChange = (selectedDate) => {
+    this.setState({selectedDate});
+  };
+
+  renderModalIOS = () => {
+    if (Platform.OS === 'ios') {
+      let {showModal, selectedDate} = this.state;
+      let {cancelText, doneText, mode, both} = this.props;
+      let iosMode = both ? 'datetime' : mode;
+      return (
+        <Modal animated={true}
+               transparent={true}
+               visible={showModal}>
+          <View style={styles.modalContainer}>
+            <View style={styles.btnContainer}>
+              <View style={styles.btn}>
+                <TouchableHighlight style={styles.cancel}
                                     underlayColor={'transparent'}
-                                    onPress={this.handlePressCancel}
-                                >
-                                    <Text style={styles.text}>{this.props.cancelText}</Text>
-                                </TouchableHighlight>
-                            </View>
-                            <View style={styles.btn}>
-                                <TouchableHighlight
-                                    style={styles.done}
-                                    underlayColor={'transparent'}
-                                    onPress={this.handlePressDone}
-                                >
-                                    <Text style={styles.text}>{this.props.doneText}</Text>
-                                </TouchableHighlight>
-                            </View>
-                        </View>
-                        <DatePickerIOS
-                            style={styles.datePickerIOS}
-                            date={this.state.selectedDate}
-                            mode={'date'}
-                            minimumDate={this.state.minDate}
-                            maximumDate={this.state.maxDate}
-                            onDateChange={(date) => this.handleDateChange(date)}
-                        />
-                    </View>
-                </Modal>
-            );
-        }
-
-        return null;
-    }
-
-    render() {
-        return (
-            <View>
-                {this.renderModalIOS()}
-                <TouchableHighlight onPress={this.openDatePicker} underlayColor={'transparent'}>
-                    {this.props.children}
+                                    onPress={this._handlePressCancel}>
+                  <Text style={styles.text}>{cancelText}</Text>
                 </TouchableHighlight>
+              </View>
+              <View style={styles.btn}>
+                <TouchableHighlight style={styles.done}
+                                    underlayColor={'transparent'}
+                                    onPress={this._handlePressDone}>
+                  <Text style={styles.text}>{doneText}</Text>
+                </TouchableHighlight>
+              </View>
             </View>
-        );
+            <View style={styles.pickerContainer}>
+              <DatePickerIOS style={styles.datePickerIOS}
+                             date={selectedDate}
+                             mode={iosMode}
+                             onDateChange={this._handleDateChange}/>
+            </View>
+          </View>
+        </Modal>
+      );
     }
+
+    return null;
+  };
+
+  render = () => {
+    return (
+      <View>
+        {this.renderModalIOS()}
+        <TouchableHighlight onPress={this._openDateTimePicker}
+                            underlayColor={'transparent'}>
+          <View>
+            {this.props.children}
+          </View>
+        </TouchableHighlight>
+      </View>
+    );
+  };
 }
 
-CustomDatePicker.propTypes = {
-    onDone: React.PropTypes.func.isRequired,
-    onCancel: React.PropTypes.func,
-    initialDate: React.PropTypes.instanceOf(Date),
-    minDate: React.PropTypes.instanceOf(Date),
-    maxDate: React.PropTypes.instanceOf(Date),
-    cancelText: React.PropTypes.string,
-    doneText: React.PropTypes.string
-};
-
-CustomDatePicker.defaultProps = {
-    cancelText: 'Cancel',
-    doneText: 'Done'
-};
-
 const styles = StyleSheet.create({
-    modalContainer: {
-        width: WIN.width,
-        height: WIN.height,
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        alignItems: 'center',
-        justifyContent: 'flex-end'
-    },
-    btnContainer: {
-        width: WIN.width,
-        backgroundColor: 'white',
-        flexDirection: 'row',
-        borderTopWidth: 1,
-        borderColor: 'lightgray',
-        paddingTop: 10
-    },
-    datePickerIOS: {
-        backgroundColor: 'white'
-    },
-    btn: {
-        flex: 1,
-        paddingHorizontal: 15
-    },
-    cancel: {
-        alignItems: 'flex-start'
-    },
-    done: {
-        alignItems: 'flex-end'
-    },
-    text: {
-        color: '#138BE4'
-    }
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  btnContainer: {
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    paddingTop: 10,
+  },
+  datePickerIOS: {
+    backgroundColor: 'white'
+  },
+  pickerContainer: {
+    padding: 20,
+    backgroundColor: 'white',
+  },
+  btn: {
+    flex: 1,
+    paddingHorizontal: 15
+  },
+  cancel: {
+    alignItems: 'flex-start'
+  },
+  done: {
+    alignItems: 'flex-end'
+  },
+  text: {
+    color: '#138BE4'
+  },
 });
