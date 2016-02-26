@@ -1,14 +1,14 @@
 {
-  "name": "react-native-date-picker",
+  "name": "react-native-date-time-picker",
   "version": "0.0.1",
-  "description": "Cross platform wrapper around RN date pickers",
-  "main": "RNDatePicker.js",
+  "description": "Cross platform wrapper around RN date/time pickers",
+  "main": "DateTimePicker.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jabm111/react-native-date-picker.git"
+    "url": "git+https://github.com/DispatcherInc/react-native-date-time-picker"
   },
   "keywords": [
     "react",
@@ -16,10 +16,10 @@
     "date",
     "picker"
   ],
-  "author": "James Morton",
+  "author": "DispatcherInc",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jabm111/react-native-date-picker/issues"
+    "url": "https://github.com/DispatcherInc/react-native-date-time-picker/issues"
   },
-  "homepage": "https://github.com/jabm111/react-native-date-picker#readme"
+  "homepage": "https://github.com/DispatcherInc/react-native-date-time-picker/react-native-date-picker#readme"
 }
