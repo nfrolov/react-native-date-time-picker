@@ -19,7 +19,7 @@ const WIN = Dimensions.get('window');
 export default class DateTimePicker extends Component {
 
   static propTypes = {
-    style: PropTypes.View,
+    style: View.propTypes.style,
     onDone: PropTypes.func.isRequired,
     onCancel: PropTypes.func,
     initialDate: PropTypes.instanceOf(Date),
