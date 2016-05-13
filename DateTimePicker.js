@@ -82,7 +82,7 @@ export default class DateTimePicker extends Component {
       .then((result) => {
         if (result.action === TimePickerAndroid.timeSetAction) {
           let selectedDate = new Date(
-            initialDate.getFullYear(), initialDate.getMonth(), initialDate.getDay(), result.hour, result.minute);
+            initialDate.getFullYear(), initialDate.getMonth(), initialDate.getDate(), result.hour, result.minute);
           this.setState({selectedDate});
           onDone(selectedDate);
         } else if (result.action === TimePickerAndroid.dismissedAction) {
