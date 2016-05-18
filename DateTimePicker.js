@@ -27,8 +27,6 @@ export default class DateTimePicker extends Component {
     maxDate: PropTypes.instanceOf(Date),
     // 'time' shows a 'time' picker, 'date' shows a date picker
     mode: PropTypes.oneOf(['time', 'date']),
-    // When both is set, we show a DatePickerIOS in mode 'datetime' on IOS, ignored on Android
-    both: PropTypes.bool,
     cancelText: PropTypes.string,
     doneText: PropTypes.string
   };
@@ -121,7 +119,6 @@ export default class DateTimePicker extends Component {
     if (Platform.OS === 'ios') {
       let {showModal, selectedDate} = this.state;
       let {cancelText, doneText, mode, both} = this.props;
-      let iosMode = both ? 'datetime' : mode;
       return (
         <Modal animated={true}
                transparent={true}
@@ -146,7 +143,7 @@ export default class DateTimePicker extends Component {
             <View style={styles.pickerContainer}>
               <DatePickerIOS style={styles.datePickerIOS}
                              date={selectedDate}
-                             mode={iosMode}
+                             mode={mode}
                              onDateChange={this._handleDateChange}/>
             </View>
           </View>
