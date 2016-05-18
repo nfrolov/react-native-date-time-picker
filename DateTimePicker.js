@@ -78,7 +78,7 @@ export default class DateTimePicker extends Component {
   _openAndroidTimePicker = () => {
     let {onDone, onCancel, initialDate} = this.props;
     let {selectedDate} = this.state;
-    TimePickerAndroid.open({hour: selectedDate.getHours(), minute: selectedDate.getMinutes(), is24Hour: false})
+    TimePickerAndroid.open({hour: selectedDate.getHours(), minute: selectedDate.getMinutes()})
       .then((result) => {
         if (result.action === TimePickerAndroid.timeSetAction) {
           let selectedDate = new Date(
