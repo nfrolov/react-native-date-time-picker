@@ -158,9 +158,7 @@ export default class DateTimePicker extends Component {
         <TouchableHighlight style={styles.touchable}
                             onPress={this._openDateTimePicker}
                             underlayColor={'transparent'}>
-          <View style={styles.innerContainer}>
-            {this.props.children}
-          </View>
+          {this.props.children}
         </TouchableHighlight>
       </View>
     );
@@ -170,10 +168,6 @@ export default class DateTimePicker extends Component {
 const styles = StyleSheet.create({
   touchable: {
     flexDirection: 'row',
-  },
-  innerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
   modalContainer: {
     flex: 1,
