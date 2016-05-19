@@ -1,8 +1,9 @@
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
+
+var { Component, PropTypes } = React;
 var {
   Platform,
-  Component,
-  PropTypes,
   Modal,
   View,
   DatePickerIOS,
@@ -11,7 +12,7 @@ var {
   TouchableHighlight,
   Text,
   StyleSheet
-  } = React;
+  } = ReactNative;
 
 export default class DateTimePicker extends Component {
 
