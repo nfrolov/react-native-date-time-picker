@@ -10,11 +10,8 @@ var {
   TimePickerAndroid,
   TouchableHighlight,
   Text,
-  Dimensions,
   StyleSheet
   } = React;
-
-const WIN = Dimensions.get('window');
 
 export default class DateTimePicker extends Component {
 
