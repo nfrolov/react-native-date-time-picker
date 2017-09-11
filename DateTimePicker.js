@@ -1,7 +1,8 @@
 var React = require('react');
 var ReactNative = require('react-native');
+var PropTypes = require('prop-types');
 
-var { Component, PropTypes } = React;
+var { Component } = React;
 var {
   Platform,
   Modal,
