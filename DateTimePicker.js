@@ -1,6 +1,5 @@
 var React = require('react');
 var ReactNative = require('react-native');
-var PropTypes = require('prop-types');
 
 var { Component } = React;
 var {
@@ -16,20 +15,6 @@ var {
   } = ReactNative;
 
 export default class DateTimePicker extends Component {
-
-  static propTypes = {
-    style: View.propTypes.style,
-    onDone: PropTypes.func.isRequired,
-    onCancel: PropTypes.func,
-    initialDate: PropTypes.instanceOf(Date),
-    minDate: PropTypes.instanceOf(Date),
-    maxDate: PropTypes.instanceOf(Date),
-    // 'time' shows a 'time' picker, 'date' shows a date picker
-    mode: PropTypes.oneOf(['time', 'date']),
-    cancelText: PropTypes.string,
-    doneText: PropTypes.string
-  };
-
   static defaultProps = {
     style: {},
     cancelText: 'Cancel',

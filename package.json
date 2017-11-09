@@ -23,6 +23,5 @@
   },
   "homepage": "https://github.com/DispatcherInc/react-native-date-time-picker/react-native-date-picker#readme",
   "dependencies": {
-    "prop-types": "^15.5.10"
   }
 }
